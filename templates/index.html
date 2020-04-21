@@ -61,53 +61,49 @@
 
     <div class="container is-block">
       <section class="section">
-        <div class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <div class="field">
-                <div class="control">
-                  <input
-                    type="text"
-                    id="client_ID"
-                    class="input is-info"
-                    placeholder="Client ID"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="level-item">
-              <div class="field">
-                <div class="control">
-                  <input
-                    type="text"
-                    id="command"
-                    class="input is-info"
-                    placeholder="Command"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="level-item">
-              <button id="sendCommand" class="button is-primary">
-                Command
-              </button>
-            </div>
+        <div class="field">
+          <div class="control">
+            <input
+              type="text"
+              id="client_ID"
+              class="input is-info"
+              placeholder="Client ID"
+              required
+            />
           </div>
         </div>
 
-        <p class="is-size-5 has-text-centered">
-          Output
-        </p>
-        <p id="output_from_client" class="has-text-centered"></p>
+        <div class="field">
+          <div class="control">
+            <input
+              type="text"
+              id="command"
+              class="input is-info"
+              placeholder="Command"
+              required
+            />
+          </div>
+        </div>
+
+        <button id="sendCommand" class="button is-primary is-fullwidth">
+          Command
+        </button>
+
+        <br /><br />
+
+        <div class="box">
+          <p class="is-size-4 has-text-centered has-text-primary">
+            Output
+          </p>
+          <p id="output_from_client" class="has-text-centered">
+            Nothing to show !
+          </p>
+        </div>
       </section>
 
       <section class="section">
         <div class="table-container">
-          <table class="table is-hoverable">
+          <table class="table is-hoverable is-fullwidth">
             <thead>
               <tr>
                 <th scope="col" colspan="2">Client ID</th>
