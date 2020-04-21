@@ -19,18 +19,6 @@ def test_connect():
     print('Client got connected !')
 
 
-@socketio.on('message')
-def handle_message(message):
-    print('\n\nReceived Message: ' + message)
-    # send(message, broadcast=True)
-
-
-@socketio.on('receive_command')
-def handle_command(json):
-    print(f'Received Message : {str(json)}')
-    # emit('Command to Client : ', json, broadcast=True)
-
-
 @socketio.on('first_handshake')
 def handle_first_handshake(payload):
 
@@ -58,7 +46,7 @@ def handle_output_from_client(message):
     socketio.emit('output_from_client_to_web', message)
 
 
-debug = True
+debug = False
 
 if __name__ == "__main__":
     socketio.run(app, debug=debug, port=5000)
