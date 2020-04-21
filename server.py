@@ -5,35 +5,12 @@ app = Flask(__name__, template_folder='templates/')
 app.config['SECRET_KEY'] = 'secret'
 socketio = SocketIO(app)
 
-command_list = []
-command_list.append({'foo': 'bar'})
+connected_users = {}
 
 
 @app.route('/', methods=['GET', 'POST'])
 def command():
-
-    global command_list
-
-    try:
-        if request.method == 'POST':
-
-            client_ID = request.form['client_ID']
-            command = request.form['command']
-
-            command_info = {}
-
-            command_info['client_ID'] = client_ID
-            command_info['command'] = command
-            command_info['is_processed'] = False
-
-            socketio.emit('send_command_to_client', command_info)
-
-            command_list.append(command_info)
-
-        return render_template('index.html')
-
-    except Exception:
-        return render_template('index.html')
+    return render_template('index.html')
 
 
 @socketio.on('connect')
@@ -50,12 +27,39 @@ def handle_message(message):
 
 @socketio.on('receive_command')
 def handle_command(json):
-    print(f'Received Command : {str(json)}')
+    print(f'Received Message : {str(json)}')
     # emit('Command to Client : ', json, broadcast=True)
 
-debug = False
+
+@socketio.on('first_handshake')
+def handle_first_handshake(payload):
+
+    connected_users[payload['client_ID']] = payload['client_Session_ID']
+    print(f'A client got connected ! \nPayload Data: \n{str(payload)}')
+    socketio.emit('update_connections_list', payload)
+
+
+@socketio.on('command_from_web', namespace='/command')
+def command_to_client(payload):
+
+    recipient_session_ID = connected_users[payload['client_ID']]
+    command = payload['command']
+
+    print(payload)
+    print(recipient_session_ID)
+    print(command)
+
+    emit('server_commands', command, room=recipient_session_ID)
+
+
+@socketio.on('output_from_client')
+def handle_output_from_client(message):
+    print(f'The execution in Client was : {message}')
+    socketio.emit('output_from_client_to_web', message)
+
+
+debug = True
 
 if __name__ == "__main__":
     socketio.run(app, debug=debug, port=5000)
-    print(str(command_list))
     emit('send_command_to_client', {'foo': 'bar'}, broadcast=True)
