@@ -4,80 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Command Sender</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+      integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
-    <script type="text/javascript" charset="utf-8">
-      // When document is ready.
-      document.addEventListener("DOMContentLoaded", function (event) {
-        var socket = io("http://127.0.0.1:5000");
-
-        // When someone connect to the socket.
-        socket.on("connect", function () {
-          socket.send("User has connected !");
-        });
-
-        socket.on("output_from_client_to_web", function(message) {
-            document.getElementById("output_from_client").innerHTML = message;
-        });
-
-        socket.on("update_connections_list", function (connection_list) {
-          console.log("Client got connected !");
-          console.log(connection_list);
-
-          //
-          let connected_clients_table = document.getElementById(
-            "connected_clients"
-          );
-          let new_table_row = document.createElement("tr");
-
-          let client_ID_node = document.createElement("td");
-          let client_ID_text_node = document.createTextNode(
-            connection_list["client_ID"]
-          );
-          client_ID_node.appendChild(client_ID_text_node);
-
-          let password_node = document.createElement("td");
-          let password_text_node = document.createTextNode(
-            connection_list["password"]
-          );
-          password_node.appendChild(password_text_node);
-
-          let client_Session_ID_node = document.createElement("td");
-          let client_Session_ID_text_node = document.createTextNode(
-            connection_list["client_Session_ID"]
-          );
-          client_Session_ID_node.appendChild(client_Session_ID_text_node);
-
-          new_table_row.append(client_ID_node);
-          new_table_row.append(password_node);
-          new_table_row.append(client_Session_ID_node);
-
-          connected_clients.appendChild(new_table_row);
-        });
-
-        // When send button is clicked.
-        var send_command = io("http://127.0.0.1:5000/command");
-        document
-          .getElementById("sendCommand")
-          .addEventListener("click", function () {
-            let client_ID = document.getElementById("client_ID").value;
-            let command = document.getElementById("command").value;
-
-            send_command.emit("command_from_web", {
-              client_ID: client_ID,
-              command: command,
-            });
-          });
-      });
-
-      console.log(io.sockets.clients());
-    </script>
-
     <nav class="navbar" role="navigation" aria-label="main navigation">
       <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
@@ -154,28 +100,24 @@
         </div>
 
         <p class="is-size-5 has-text-centered">
-            Output
+          Output
         </p>
-        <p id="output_from_client" class="is-family-monospace has-text-centered" style="font-family: monospace; padding: 20px;">
-
-        </p>
+        <p id="output_from_client" class="has-text-centered"></p>
       </section>
-
-      
 
       <section class="section">
         <div class="table-container">
-            <table class="table">
-                <thead >
-                  <tr>
-                    <th scope="col">Client ID</th>
-                    <th scope="col">Password</th>
-                    <th scope="col">Client Session ID</th>
-                  </tr>
-                </thead>
-                <tbody id="connected_clients"></tbody>
-              </table>
-          </div>
+          <table class="table is-hoverable">
+            <thead>
+              <tr>
+                <th scope="col" colspan="2">Client ID</th>
+                <th scope="col">Password</th>
+                <th scope="col">Client Session ID</th>
+              </tr>
+            </thead>
+            <tbody id="connected_clients"></tbody>
+          </table>
+        </div>
       </section>
     </div>
   </body>
