@@ -1,5 +1,19 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 from flask_socketio import SocketIO, send, emit, disconnect
+from functools import wraps
+
+# Basic Authentication
+def auth_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if auth and auth.username == 'commander' and auth.password == 'commander123':
+            return func(*args, **kwargs)
+        return make_response('Could not verify you, Commander !', 401, {
+            'WWW-Authenticate': 'Basic realm="Login Required !'
+        })
+
+    return decorated
 
 
 app = Flask(__name__, template_folder='templates/')
@@ -12,6 +26,7 @@ active_users = []
 
 
 @app.route('/', methods=['GET', 'POST'])
+@auth_required
 def command():
     socketio.emit('client_please_report', 'Dummy', broadcast=True)
     return render_template('index.html')
