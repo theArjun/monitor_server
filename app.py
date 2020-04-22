@@ -27,15 +27,8 @@ active_users = []
 
 @app.route('/', methods=['GET', 'POST'])
 @auth_required
-def command():
-    socketio.emit('client_please_report', 'Dummy', broadcast=True)
+def index():
     return render_template('index.html')
-
-
-@socketio.on('disconnect')
-def test_disconnect():
-    print('Client disconnected')
-
 
 @socketio.on('first_handshake')
 def handle_first_handshake(payload):
@@ -44,7 +37,7 @@ def handle_first_handshake(payload):
     socketio.emit('client_please_report', 'Dummy', broadcast=True)
     active_users.clear()
 
-
+# Handling command from the frontend and sending to client for execution
 @socketio.on('command_from_web', namespace='/command')
 def command_to_client(payload):
 
@@ -52,17 +45,22 @@ def command_to_client(payload):
     command = payload['command']
     emit('server_commands', command, room=recipient_session_ID)
 
-
+# Command Execution from Client to Server
 @socketio.on('output_from_client')
 def handle_output_from_client(message):
     print(f'The execution in Client was : {message}')
     socketio.emit('output_from_client_to_web', message)
 
-
+# Taking attendance of realtime clients and updating frontend.
 @socketio.on('realtime_attendance')
 def collect_realtime_attendance(payload):
-    payload['client_IP'] = str(request.access_route)
+    payload['client_IP'] = request.access_route
     active_users.append(payload)
+    socketio.emit('update_connections_list', active_users)
+
+# Populating the frontend when reloading.
+@socketio.on('populate_me')
+def populate_frontend(message):
     print(active_users)
     socketio.emit('update_connections_list', active_users)
 
