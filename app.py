@@ -1,30 +1,33 @@
 from flask import Flask, render_template, request
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, send, emit, disconnect
+
 
 app = Flask(__name__, template_folder='templates/')
 app.config['SECRET_KEY'] = 'secret'
 socketio = SocketIO(app)
 
+
 connected_users = {}
+active_users = []
 
 
 @app.route('/', methods=['GET', 'POST'])
 def command():
+    socketio.emit('client_please_report', 'Dummy', broadcast=True)
     return render_template('index.html')
 
 
-@socketio.on('connect')
-def test_connect():
-    # emit('Message from server : ', {'data': 'Connected'})
-    print('Client got connected !')
+@socketio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected')
 
 
 @socketio.on('first_handshake')
 def handle_first_handshake(payload):
 
     connected_users[payload['client_ID']] = payload['client_Session_ID']
-    print(f'A client got connected ! \nPayload Data: \n{str(payload)}')
-    socketio.emit('update_connections_list', payload)
+    socketio.emit('client_please_report', 'Dummy', broadcast=True)
+    active_users.clear()
 
 
 @socketio.on('command_from_web', namespace='/command')
@@ -32,11 +35,6 @@ def command_to_client(payload):
 
     recipient_session_ID = connected_users[payload['client_ID']]
     command = payload['command']
-
-    print(payload)
-    print(recipient_session_ID)
-    print(command)
-
     emit('server_commands', command, room=recipient_session_ID)
 
 
@@ -46,8 +44,16 @@ def handle_output_from_client(message):
     socketio.emit('output_from_client_to_web', message)
 
 
-debug = False
+@socketio.on('realtime_attendance')
+def collect_realtime_attendance(payload):
+    payload['client_IP'] = str(request.access_route)
+    active_users.append(payload)
+    print(active_users)
+    socketio.emit('update_connections_list', active_users)
+
+
+debug = True
 
 if __name__ == "__main__":
+    # app.run(debug=debug)
     socketio.run(app, debug=debug, port=5000)
-    emit('send_command_to_client', {'foo': 'bar'}, broadcast=True)

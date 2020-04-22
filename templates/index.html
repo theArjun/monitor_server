@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Command Sender</title>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
+      integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo="
+      crossorigin="anonymous"
+    ></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
     <link
@@ -35,10 +39,10 @@
           <div class="navbar-item">
             <div class="buttons">
               <a class="button is-primary">
-                <strong>Sign up</strong>
+                <strong>Logout</strong>
               </a>
-              <a class="button is-light">
-                Log in
+              <a class="button is-danger" id="action_disconnect">
+                Disconnect
               </a>
             </div>
           </div>
@@ -61,58 +65,60 @@
 
     <div class="container is-block">
       <section class="section">
-        <div class="field">
-          <div class="control">
-            <input
-              type="text"
-              id="client_ID"
-              class="input is-info"
-              placeholder="Client ID"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="control">
-            <input
-              type="text"
-              id="command"
-              class="input is-info"
-              placeholder="Command"
-              required
-            />
-          </div>
-        </div>
-
-        <button id="sendCommand" class="button is-primary is-fullwidth">
-          Command
-        </button>
-
-        <br /><br />
-
         <div class="box">
+          <div class="is-primary is-text-3" style="font-family: monospace;">Send Command To :</div>
+          <div class="field">
+            <div class="control">
+              <input
+                type="text"
+                id="client_ID"
+                class="input is-primary"
+                placeholder="Client ID"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="control">
+              <input
+                type="text"
+                id="command"
+                class="input is-primary"
+                placeholder="Command"
+                required
+              />
+            </div>
+          </div>
+
+          <button id="sendCommand" class="button is-primary is-fullwidth">
+            Command
+          </button>
+        </div>
+
+
+        <div class="box" id="when_clients_attends">
           <p class="is-size-4 has-text-centered has-text-primary">
             Output
           </p>
           <p id="output_from_client" class="has-text-centered">
             Nothing to show !
           </p>
-        </div>
-      </section>
 
-      <section class="section">
-        <div class="table-container">
-          <table class="table is-hoverable is-fullwidth">
-            <thead>
-              <tr>
-                <th scope="col" colspan="2">Client ID</th>
-                <th scope="col">Password</th>
-                <th scope="col">Client Session ID</th>
-              </tr>
-            </thead>
-            <tbody id="connected_clients"></tbody>
-          </table>
+          <div class="table-container">
+            <table class="table is-hoverable is-fullwidth" id="clients_list">
+              <thead>
+                <tr>
+                  <th scope="col">Client ID</th>
+                  <th></th>
+                  <th scope="col">Password</th>
+                  <th scope="col">Session ID</th>
+                  <th scope="col">IP Address</th>
+                </tr>
+              </thead>
+              <tbody id="connected_clients"></tbody>
+            </table>
+          </div>
         </div>
       </section>
     </div>

