@@ -6,3 +6,11 @@
 #command{
   font-family: monospace;
 }
+
+#client_ID {
+  padding: 3px;
+  color: white;
+  font-weight: bold;
+  border-radius: 3px;
+  background-color: teal;
+}
