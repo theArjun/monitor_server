@@ -7,16 +7,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
   socket.emit("populate_me", "I am empty !");
 
   socket.on("output_from_client_to_web", function (message) {
-    document.getElementById("output_from_client").innerHTML = message;
+    message = "<pre>" + message + "</pre>";
+    message = message.replace("\n", "<br>");
+
+    console.log(message);
+    let output_display = document.getElementById("output_from_client");
+    output_display.innerHTML = message;
+    output_display.classList.add("has-text-left");
+    output_display.classList.add("is-size-5");
   });
 
-  
   socket.on("update_connections_list", function (connection_list) {
     document.getElementById("connected_clients").innerHTML = "";
     console.clear();
     console.log(connection_list);
     console.log("The number of clients : " + connection_list.length);
-    socket.emit("")
+    socket.emit("");
 
     let connected_clients_table = document.getElementById("connected_clients");
 
@@ -79,6 +85,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
   var send_command = io("http://127.0.0.1:5000/command");
   document.getElementById("sendCommand").addEventListener("click", function () {
     let client_ID = document.getElementById("client_ID").innerHTML;
+    console.log(client_ID);
+    if (client_ID == "") {
+      alert("Select a client !");
+      return;
+    }
     let command = document.getElementById("command").value;
 
     send_command.emit("command_from_web", {
