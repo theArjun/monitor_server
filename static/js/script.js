@@ -3,9 +3,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
   var socket = io("http://127.0.0.1:5000");
 
   // When someone connect to the socket.
-  socket.on("connect", function () {
-    socket.send("User has connected !");
-  });
+  document.getElementById("connected_clients").innerHTML = "";
+  socket.emit("populate_me", "I am empty !");
 
   socket.on("output_from_client_to_web", function (message) {
     document.getElementById("output_from_client").innerHTML = message;
@@ -15,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   socket.on("update_connections_list", function (connection_list) {
     document.getElementById("connected_clients").innerHTML = "";
     console.clear();
+    console.log(connection_list);
     console.log("The number of clients : " + connection_list.length);
     socket.emit("")
 
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       icon.addEventListener("mousedown", function () {
         let fetched_client_ID = this.parentElement.parentElement.children[0]
           .innerHTML;
-        document.getElementById("client_ID").value = fetched_client_ID;
+        document.getElementById("client_ID").innerHTML = fetched_client_ID;
       });
       let icon_head = document.createElement("th");
       icon_head.appendChild(icon);
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   // When send button is clicked.
   var send_command = io("http://127.0.0.1:5000/command");
   document.getElementById("sendCommand").addEventListener("click", function () {
-    let client_ID = document.getElementById("client_ID").value;
+    let client_ID = document.getElementById("client_ID").innerHTML;
     let command = document.getElementById("command").value;
 
     send_command.emit("command_from_web", {
