@@ -1,6 +1,8 @@
 // When document is ready.
 document.addEventListener("DOMContentLoaded", function (event) {
-  var socket = io("http://127.0.0.1:5000");
+  const clients_list = [];
+
+  var socket = io("https://commandingserver.herokuapp.com:5000", {transports: ['websocket']}); 
 
   // When someone connect to the socket.
   document.getElementById("connected_clients").innerHTML = "";
@@ -22,24 +24,38 @@ document.addEventListener("DOMContentLoaded", function (event) {
     console.clear();
     console.log(connection_list);
     console.log("The number of clients : " + connection_list.length);
-    socket.emit("");
 
     let connected_clients_table = document.getElementById("connected_clients");
 
     for (let i = 0; i < connection_list.length; i++) {
       let new_table_row = document.createElement("tr");
 
-      // /* Clipboard */
-      let icon = document.createElement("i");
-      icon.classList.add("fa");
-      icon.classList.add("fa-clipboard");
-      icon.addEventListener("mousedown", function () {
+      let checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = 0;
+
+      checkbox.addEventListener("click", function () {
         let fetched_client_ID = this.parentElement.parentElement.children[0]
           .innerHTML;
-        document.getElementById("client_ID").innerHTML = fetched_client_ID;
+        if (checkbox.checked == true) {
+          clients_list.push(fetched_client_ID);
+        } else {
+          while (clients_list.includes(fetched_client_ID)) {
+            clients_list.pop(fetched_client_ID);
+          }
+        }
+        console.log(clients_list);
+        document.getElementById("client_ID").innerHTML = "";
+        for (let i = 0; i < clients_list.length; i++) {
+          let client_listing = document.createElement("div");
+          client_listing.id = "client_listing";
+          client_listing.innerHTML = clients_list[i];
+          document.getElementById("client_ID").append(client_listing);
+        }
       });
+
       let icon_head = document.createElement("th");
-      icon_head.appendChild(icon);
+      icon_head.appendChild(checkbox);
 
       /* Client ID Node */
       let client_ID_node = document.createElement("td");
@@ -84,18 +100,28 @@ document.addEventListener("DOMContentLoaded", function (event) {
   // When send button is clicked.
   var send_command = io("http://127.0.0.1:5000/command");
   document.getElementById("sendCommand").addEventListener("click", function () {
-    let client_ID = document.getElementById("client_ID").innerHTML;
-    console.log(client_ID);
-    if (client_ID == "") {
+    // let client_ID = document.getElementById("client_ID").innerHTML;
+    // console.log(client_ID);
+    // if (client_ID == "") {
+    //   alert("Select a client !");
+    //   return;
+    // }
+
+    if (clients_list.length == 0) {
       alert("Select a client !");
       return;
     }
+
     let command = document.getElementById("command").value;
 
-    send_command.emit("command_from_web", {
-      client_ID: client_ID,
-      command: command,
-    });
+    for (let index = 0; index < clients_list.length; index++) {
+      
+      send_command.emit("command_from_web", {
+        client_ID: clients_list[index],
+        command: command,
+      });
+      
+    }
   });
 
   function getFirstTdContent(row) {

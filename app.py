@@ -3,6 +3,8 @@ from flask_socketio import SocketIO, send, emit, disconnect
 from functools import wraps
 
 # Basic Authentication
+
+
 def auth_required(func):
     @wraps(func)
     def decorated(*args, **kwargs):
@@ -18,7 +20,7 @@ def auth_required(func):
 
 app = Flask(__name__, template_folder='templates/')
 app.config['SECRET_KEY'] = 'secret'
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 connected_users = {}
@@ -29,6 +31,7 @@ active_users = []
 @auth_required
 def index():
     return render_template('index.html')
+
 
 @socketio.on('first_handshake')
 def handle_first_handshake(payload):
@@ -41,6 +44,7 @@ def handle_first_handshake(payload):
 @socketio.on('command_from_web', namespace='/command')
 def command_to_client(payload):
 
+    print(str(payload))
     recipient_session_ID = connected_users[payload['client_ID']]
     command = payload['command']
     emit('server_commands', command, room=recipient_session_ID)
