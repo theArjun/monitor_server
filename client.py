@@ -1,6 +1,7 @@
 
 import re
 import subprocess
+import datetime
 from shutil import which
 
 import socketio
@@ -15,7 +16,7 @@ start_timer = True
 
 payload = {
     'client_ID': fake.name(),
-    'password': 'Does it matter ?',
+    'password': str(datetime.datetime.now())[:-7],
 }
 
 
@@ -81,5 +82,5 @@ def register_to_server_for_realtime_attendance(message):
 
 
 if __name__ == "__main__":
-    clientsio.connect('https://commandingserver.herokuapp.com:5000')
+    clientsio.connect('http://localhost:5000')
     clientsio.wait()
