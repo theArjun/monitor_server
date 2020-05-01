@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", function (event) {
   const clients_list = [];
 
-  var socket = io("https://commandingserver.herokuapp.com:5000", {transports: ['websocket']}); 
+  var socket = io("http://127.0.0.1:5000"); 
 
   // When someone connect to the socket.
   document.getElementById("connected_clients").innerHTML = "";
