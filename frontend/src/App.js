@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
-import Clients from "./Clients";
-import Hero from "./Hero";
+import Clients from "./components/Clients";
+import Hero from "./components/Hero";
 const ENDPOINT = "http://127.0.0.1:5000/";
 class App extends Component {
   constructor(props) {
