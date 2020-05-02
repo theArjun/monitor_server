@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
-import Clients from "./components/Clients";
+import Clients from "./components/obselete/Clients";
+import ActionsOnSelectedRows from './components/SelectClient';
 import Hero from "./components/Hero";
 const ENDPOINT = "http://127.0.0.1:5000/";
 class App extends Component {
@@ -24,7 +25,7 @@ class App extends Component {
       <div>
         <Hero />
         <div className="container">
-          <Clients clients={this.state.response} />
+          <ActionsOnSelectedRows clients={this.state.response} />
         </div>
       </div>
     );
