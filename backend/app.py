@@ -45,7 +45,7 @@ def handle_first_handshake(payload):
 def command_to_client(payload):
 
     print(str(payload))
-    recipient_session_ID = connected_users[payload['client_ID']]
+    recipient_session_ID = payload['client_ID']
     command = payload['command']
     emit('server_commands', command, room=recipient_session_ID)
 
