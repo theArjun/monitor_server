@@ -12,7 +12,7 @@ const ActionsOnSelectedRows = (props) => {
 
   return (
     <div>
-    <Slider selected_clients={selectedClients}/>
+      <Slider selected_clients={selectedClients} socket={props.socket} />
       <MaterialTable
         title="Connected Clients"
         columns={[
@@ -31,7 +31,6 @@ const ActionsOnSelectedRows = (props) => {
             icon: "code",
             onClick: (evt, data) => {
               setSelectedClients(data);
-              console.log(selectedClients);
             },
           },
         ]}
