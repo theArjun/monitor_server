@@ -72,7 +72,7 @@ def receive_command(json):
 def handle_command_from_server(command):
 
     output = execute_command(command)
-    output = f'From {payload["client_ID"]}:\n\n{output}'
+    output = f'{output}'
     clientsio.emit('output_from_client', output)
 
 
@@ -83,4 +83,5 @@ def register_to_server_for_realtime_attendance(message):
 
 if __name__ == "__main__":
     clientsio.connect('http://localhost:5000')
+    print(payload['client_ID'])
     clientsio.wait()
