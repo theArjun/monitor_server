@@ -1,33 +1,31 @@
 import React from "react";
-import Client from "./Client";
-import SelectClient from "./SelectClient";
+import Client from "../Client";
+import Slider from "../Slider";
 
-// Select Event Handling
-const selected_clients = [];
-
-const selectClientHandler = (event) => {
-  const client_row = event.target.parentNode.parentNode;
-  const client_session_ID = client_row.children[2].innerHTML;
-  const client_ID = client_row.children[0].innerHTML;
-
-  if (event.target.checked) {
-    if (!selected_clients.includes(client_session_ID)) {
-      selected_clients.push(client_session_ID);
-    }
-  } else {
-    if (selected_clients.includes(client_session_ID)) {
-      selected_clients.pop(client_session_ID);
-    }
-  }
-  console.log(selected_clients);
-};
-// END Select Event Handling
-
-
-// Listing Clients
 const clients = (props) => {
   const clients = props.clients;
   const showClients = clients.length > 0 ? true : false;
+
+  // Select Event Handling
+  const selectedClients = [];
+
+  const selectClientHandler = (event) => {
+    const clientRow = event.target.parentNode.parentNode;
+    const client_session_ID = clientRow.children[2].innerHTML;
+    const client_ID = clientRow.children[0].innerHTML;
+
+    if (event.target.checked) {
+      if (!selectedClients.includes(client_session_ID)) {
+        selectedClients.push(client_session_ID);
+      }
+    } else {
+      if (selectedClients.includes(client_session_ID)) {
+        selectedClients.pop(client_session_ID);
+      }
+    }
+    console.log(selectedClients);
+  };
+  // END Select Event Handling
 
   const listClients = clients.map((item) => {
     return (
@@ -65,8 +63,8 @@ const clients = (props) => {
 
   return (
     <div>
-      <SelectClient selected_clients={selected_clients}/>
-      <br/> <br/>
+      <Slider selected_clients={selectedClients} />
+      <br /> <br />
       <div>{clientLists}</div>
     </div>
   );
