@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import MaterialTable from "material-table";
 import Slider from "./Slider";
 
-const ActionsOnSelectedRows = (props) => {
+const SelectClients = (props) => {
   const [selectedClients, setSelectedClients] = useState([]);
 
   const client_data = [];
@@ -39,4 +39,4 @@ const ActionsOnSelectedRows = (props) => {
   );
 };
 
-export default ActionsOnSelectedRows;
+export default SelectClients;
