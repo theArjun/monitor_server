@@ -4,13 +4,17 @@ import "./SendCommand.css";
 const ENDPOINT = "http://127.0.0.1:5000/command";
 const socket = socketIOClient(ENDPOINT); // socket declaration shall be at top.
 
-const SendCommand = (props) => {
+const SendCommand = React.memo((props) => {
   const [search, setSearch] = useState("");
-  const [query, setQuery] = useState("date");
+  const [query, setQuery] = useState(props.globalCommand);
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [returnCode, setReturnCode] = useState("");
   const [returnCodeMeaning, setReturnCodeMeaning] = useState("");
+
+  useEffect(() => {
+    setQuery(props.globalCommand);
+  }, [props.globalCommand]);
 
   props.socket.on("output_from_client_to_web", (commandOutput) => {
     const output = JSON.parse(commandOutput);
@@ -42,6 +46,8 @@ const SendCommand = (props) => {
     setQuery(search);
   };
 
+  const returnCodeStyling = returnCode === 0 ? "#00d1b2" : "lightcoral";
+
   return (
     <div className="tile is-parent">
       <article className="tile is-child notification is-bordered has-text-centered">
@@ -59,25 +65,18 @@ const SendCommand = (props) => {
               />
             </div>
             <div className="control">
-              <button className="button is-primary">Command</button>
+              <button type="submit" className="button is-primary">
+                Command
+              </button>
             </div>
           </div>
         </form>
-        {returnCode === 0 ? (
-          <div
-            style={{ backgroundColor: "#00d1b2" }}
-            className="return_code is-family-monospace"
-          >
-            "{returnCode}" ➡️ {returnCodeMeaning}
-          </div>
-        ) : (
-          <div
-            style={{ backgroundColor: "lightcoral" }}
-            className="return_code is-family-monospace"
-          >
-            "{returnCode}" ➡️ {returnCodeMeaning}
-          </div>
-        )}
+        <div
+          style={{ backgroundColor: returnCodeStyling }}
+          className="return_code is-family-monospace"
+        >
+          "{returnCode}" ➡️ {returnCodeMeaning}
+        </div>
         {output.length > 0 ? (
           <div className="is-family-monospace disp output">{output}</div>
         ) : null}
@@ -87,6 +86,6 @@ const SendCommand = (props) => {
       </article>
     </div>
   );
-};
+});
 
 export default SendCommand;
