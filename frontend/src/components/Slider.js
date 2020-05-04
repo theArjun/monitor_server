@@ -41,8 +41,8 @@ const settings = {
   prevArrow: <SamplePrevArrow />,
 };
 
-const slider = (props) => {
-  let selectedClientsToSlider = "";
+const slider = React.memo((props) => {
+  let selectedClientsToSlider;
   selectedClientsToSlider = (
     <Slider {...settings}>
       {props.selected_clients.map((item) => {
@@ -52,6 +52,7 @@ const slider = (props) => {
             client_ID={item.client_ID}
             client_Session_ID={item.client_Session_ID}
             socket={props.socket}
+            globalCommand={props.globalCommand}
           />
         );
       })}
@@ -59,6 +60,6 @@ const slider = (props) => {
   );
 
   return <div className="">{selectedClientsToSlider}</div>;
-};
+});
 
 export default slider;
