@@ -74,17 +74,6 @@ const SelectClients = React.memo((props) => {
               }
             },
           },
-          {
-            tooltip: "Remove from server",
-            icon: "delete",
-            onClick: (evt, data) => {
-              // data.forEach((client, index) => {
-              //   // alert(client.client_Session_ID);
-              //   props.socket.emit('remove_clients', )
-              // });
-              props.socket.emit("remove_clients", data);
-            },
-          },
         ]}
       />
     </div>
