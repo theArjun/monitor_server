@@ -1,18 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import Slider from "./Slider";
 
-const SelectClients = (props) => {
+const SelectClients = React.memo((props) => {
   const [selectedClients, setSelectedClients] = useState([]);
+  const [userTypesGlobalCommand, setUserTypesGlobalCommand] = useState("");
+  const [globalCommand, setGlobalCommand] = useState("");
+  const [showGlobalCommandBox, setShowGlobalCommandBox] = useState(false);
 
   const client_data = [];
   props.clients.map((item) => {
     client_data.push({ ...item });
   });
 
+  const updateCommand = (event) => {
+    setUserTypesGlobalCommand(event.target.value);
+  };
+
+  const getGlobalCommand = (event) => {
+    event.preventDefault();
+    setGlobalCommand(userTypesGlobalCommand);
+  };
+
   return (
     <div>
-      <Slider selected_clients={selectedClients} socket={props.socket} />
+      {showGlobalCommandBox ? (
+        <div>
+          <form onSubmit={getGlobalCommand}>
+            <div className="field has-addons is-centered">
+              <div className="control is-expanded">
+                <input
+                  className="input is-family-monospace"
+                  type="text"
+                  placeholder="Command to all selected clients"
+                  onChange={updateCommand}
+                />
+              </div>
+              <div className="control">
+                <button type="submit" className="button is-primary">
+                  Command Selected Clients
+                </button>
+              </div>
+            </div>
+          </form>
+          <br />{" "}
+        </div>
+      ) : null}
+      <Slider
+        selected_clients={selectedClients}
+        socket={props.socket}
+        globalCommand={globalCommand}
+      />
       <MaterialTable
         title="Connected Clients"
         columns={[
@@ -31,12 +69,13 @@ const SelectClients = (props) => {
             icon: "code",
             onClick: (evt, data) => {
               setSelectedClients(data);
+              setShowGlobalCommandBox(true);
             },
           },
         ]}
       />
     </div>
   );
-};
+});
 
 export default SelectClients;
