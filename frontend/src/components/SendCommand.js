@@ -11,6 +11,11 @@ const SendCommand = React.memo((props) => {
   const [error, setError] = useState("");
   const [returnCode, setReturnCode] = useState("");
   const [returnCodeMeaning, setReturnCodeMeaning] = useState("");
+  const [executionTimeStamp, setExecutionTimeStamp] = useState("");
+  const [
+    showCommandExecutionMetaData,
+    setShowCommandExecutionMetaData,
+  ] = useState(false);
 
   useEffect(() => {
     setQuery(props.globalCommand);
@@ -25,7 +30,9 @@ const SendCommand = React.memo((props) => {
       setError(output.stderr);
       setReturnCode(output.return_code);
       setReturnCodeMeaning(output.return_code_meaning);
+      setExecutionTimeStamp(output.execution_timestamp);
     }
+    setShowCommandExecutionMetaData(true);
   });
 
   let commandToSend = {
@@ -71,12 +78,19 @@ const SendCommand = React.memo((props) => {
             </div>
           </div>
         </form>
-        <div
-          style={{ backgroundColor: returnCodeStyling }}
-          className="return_code is-family-monospace"
-        >
-          "{returnCode}" ➡️ {returnCodeMeaning}
-        </div>
+
+        {showCommandExecutionMetaData ? (
+          <div
+            style={{ backgroundColor: returnCodeStyling }}
+            className="output_metadata is-family-monospace"
+          >
+            <div class="return_code">
+              {returnCode} ▶️ {returnCodeMeaning}
+            </div>
+            <div>EXECUTION TIMESTAMP : {executionTimeStamp}</div>
+          </div>
+        ) : null}
+
         {output.length > 0 ? (
           <div className="is-family-monospace disp output">{output}</div>
         ) : null}
