@@ -69,7 +69,9 @@ const SelectClients = React.memo((props) => {
             icon: "code",
             onClick: (evt, data) => {
               setSelectedClients(data);
-              setShowGlobalCommandBox(true);
+              if (data.length > 1) {
+                setShowGlobalCommandBox(true);
+              }
             },
           },
         ]}
