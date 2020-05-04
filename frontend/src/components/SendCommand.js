@@ -60,6 +60,17 @@ const SendCommand = React.memo((props) => {
       <article className="tile is-child notification is-bordered has-text-centered">
         <p className="title">{props.client_ID}</p>
         <p className="subtitle">Session ID : {props.client_Session_ID}</p>
+        {showCommandExecutionMetaData ? (
+          <div
+            style={{ backgroundColor: returnCodeStyling }}
+            className="output_metadata is-family-monospace"
+          >
+            <div class="return_code">
+              {returnCode} ▶️ {returnCodeMeaning}
+            </div>
+            <div>EXECUTION TIMESTAMP : {executionTimeStamp}</div>
+          </div>
+        ) : null}
         <br />
         <form onSubmit={getCommand}>
           <div className="field has-addons is-centered">
@@ -78,18 +89,6 @@ const SendCommand = React.memo((props) => {
             </div>
           </div>
         </form>
-
-        {showCommandExecutionMetaData ? (
-          <div
-            style={{ backgroundColor: returnCodeStyling }}
-            className="output_metadata is-family-monospace"
-          >
-            <div class="return_code">
-              {returnCode} ▶️ {returnCodeMeaning}
-            </div>
-            <div>EXECUTION TIMESTAMP : {executionTimeStamp}</div>
-          </div>
-        ) : null}
 
         {output.length > 0 ? (
           <div className="is-family-monospace disp output">{output}</div>
