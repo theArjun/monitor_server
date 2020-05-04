@@ -1,0 +1,31 @@
+.disp {
+  white-space: pre-wrap;
+  box-sizing: border-box;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.output {
+  background-color: lightgreen;
+  text-align: left;
+}
+
+.error {
+  background-color: lightcoral;
+  text-align: left;
+  color: white;
+}
+
+.rcode {
+  background-color: #00d1b2;
+  text-align: middle;
+  color: white;
+  font-size: 32px;
+  width: 12% ;
+  float: left;
+  margin: 0;
+  border-radius: 5px;
+  padding: 5px;
+}
