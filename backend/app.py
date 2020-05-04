@@ -65,8 +65,8 @@ def collect_realtime_attendance(payload):
 # Populating the frontend when reloading.
 @socketio.on('populate_me')
 def populate_frontend(message):
-    print(active_users)
-    socketio.emit('update_connections_list', active_users)
+    socketio.emit('client_please_report', 'Dummy', broadcast=True)
+    active_users.clear()
 
 
 debug = True
