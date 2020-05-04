@@ -5,7 +5,7 @@ import Slider from "./Slider";
 const SelectClients = React.memo((props) => {
   const [selectedClients, setSelectedClients] = useState([]);
   const [userTypesGlobalCommand, setUserTypesGlobalCommand] = useState("");
-  const [globalCommand, setGlobalCommand] = useState("");
+  const [globalCommand, setGlobalCommand] = useState("date");
   const [showGlobalCommandBox, setShowGlobalCommandBox] = useState(false);
 
   const client_data = [];
@@ -24,6 +24,11 @@ const SelectClients = React.memo((props) => {
 
   return (
     <div>
+      <Slider
+        selected_clients={selectedClients}
+        socket={props.socket}
+        globalCommand={globalCommand}
+      />
       {showGlobalCommandBox ? (
         <div>
           <form onSubmit={getGlobalCommand}>
@@ -46,11 +51,6 @@ const SelectClients = React.memo((props) => {
           <br />{" "}
         </div>
       ) : null}
-      <Slider
-        selected_clients={selectedClients}
-        socket={props.socket}
-        globalCommand={globalCommand}
-      />
       <MaterialTable
         title="Connected Clients"
         columns={[
