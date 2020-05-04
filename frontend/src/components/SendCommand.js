@@ -10,16 +10,17 @@ const SendCommand = (props) => {
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [returnCode, setReturnCode] = useState("");
+  const [returnCodeMeaning, setReturnCodeMeaning] = useState("");
 
   props.socket.on("output_from_client_to_web", (commandOutput) => {
     const output = JSON.parse(commandOutput);
 
     // Show output to respective clients.
     if (output.session_ID === props.client_Session_ID) {
-      console.log(output.session_ID);
       setOutput(output.stdout);
       setError(output.stderr);
       setReturnCode(output.return_code);
+      setReturnCodeMeaning(output.return_code_meaning);
     }
   });
 
@@ -44,7 +45,6 @@ const SendCommand = (props) => {
   return (
     <div className="tile is-parent">
       <article className="tile is-child notification is-bordered has-text-centered">
-        <div className="is-family-monospace disp rcode">{returnCode}</div>
         <p className="title">{props.client_ID}</p>
         <p className="subtitle">Session ID : {props.client_Session_ID}</p>
         <br />
@@ -63,7 +63,21 @@ const SendCommand = (props) => {
             </div>
           </div>
         </form>
-        <br />
+        {returnCode === 0 ? (
+          <div
+            style={{ backgroundColor: "#00d1b2" }}
+            className="return_code is-family-monospace"
+          >
+            "{returnCode}" ➡️ {returnCodeMeaning}
+          </div>
+        ) : (
+          <div
+            style={{ backgroundColor: "lightcoral" }}
+            className="return_code is-family-monospace"
+          >
+            "{returnCode}" ➡️ {returnCodeMeaning}
+          </div>
+        )}
         {output.length > 0 ? (
           <div className="is-family-monospace disp output">{output}</div>
         ) : null}
