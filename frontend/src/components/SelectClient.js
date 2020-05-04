@@ -56,7 +56,7 @@ const SelectClients = React.memo((props) => {
         columns={[
           { title: "Name", field: "client_ID" },
           { title: "Session ID", field: "client_Session_ID" },
-          { title: "Connection Time", field: "password" },
+          { title: "Connection Time", field: "connection_timestamp" },
           { title: "IP Address", field: "client_IP" },
         ]}
         data={client_data}
@@ -72,6 +72,17 @@ const SelectClients = React.memo((props) => {
               if (data.length > 1) {
                 setShowGlobalCommandBox(true);
               }
+            },
+          },
+          {
+            tooltip: "Remove from server",
+            icon: "delete",
+            onClick: (evt, data) => {
+              // data.forEach((client, index) => {
+              //   // alert(client.client_Session_ID);
+              //   props.socket.emit('remove_clients', )
+              // });
+              props.socket.emit("remove_clients", data);
             },
           },
         ]}
