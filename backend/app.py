@@ -30,7 +30,7 @@ active_users = []
 @app.route('/', methods=['GET', 'POST'])
 @auth_required
 def index():
-    return render_template('index.html')
+    return "Monitor Server"
 
 
 @socketio.on('first_handshake')
