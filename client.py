@@ -2,10 +2,25 @@
 import re
 import subprocess
 import datetime
-from shutil import which
+import os
+import sys
+import json
 
 import socketio
 from faker import Faker
+
+
+STATUS_CODE = {
+    '0': 'SUCCESS',
+    '1': 'GENERAL ERROR',
+    '2': 'MISUSE OF SHELL BUILTINS',
+    '126': 'COMMAND INVOKED CANT EXECUTE',
+    '127': 'COMMAND NOT FOUND',
+    '128': 'INVALID ARGUMENT TO EXIT',
+    '128+n': 'FATAL ERROR SIGNAL N',
+    '130': 'TERMINATION BY CTRL+C',
+    '255': 'EXIT STATUS OUT OF RANGE'
+}
 
 
 fake = Faker()
@@ -21,24 +36,38 @@ payload = {
 
 
 def execute_command(command):
-    try:
-        command = re.sub(' +', ' ', command)
-        if ' ' in command:
-            command = command.split(' ')
 
-        # Checking if single command or with parameters.
-        test_command = command if isinstance(command, str) else command[0]
+    execution_timestamp = f'{datetime.datetime.now()}'
+    proc = subprocess.Popen(command,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            shell=True
+                            )
+    stdout, stderr = proc.communicate()
+    return_code = proc.returncode
 
-        # Checking if program exists.
-        if which(test_command) is None:
-            return 'Program Not Found !'
+    if len(stdout) == 0:
+        stdout = ""
+    else:
+        stdout = stdout.decode('utf-8')
 
-        output = subprocess.check_output(command)
-        print(output)
-        return output.decode('utf-8')
-    except subprocess.CalledProcessError:
-        return 'Can\'t be executed !'
+    if len(stderr) == 0:
+        stderr = ""
+    else:
+        stderr = stderr.decode('utf-8')
 
+    client_response = {
+        'stderr': stderr,
+        'stdout': stdout,
+        'return_code': return_code,
+        'return_code_meaning': STATUS_CODE[str(return_code)],
+        'session_ID': payload['client_Session_ID'],
+        'execution_timestamp': execution_timestamp
+    }
+
+    print(client_response)
+    
+    return json.dumps(client_response)
 
 # Defining Event Handlers
 @clientsio.event
