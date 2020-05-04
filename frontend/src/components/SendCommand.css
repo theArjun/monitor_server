@@ -18,14 +18,11 @@
   color: white;
 }
 
-.rcode {
-  background-color: #00d1b2;
+.return_code {
+  border-radius: 10px;
+  padding: 10px;
   text-align: middle;
   color: white;
-  font-size: 32px;
-  width: 12% ;
-  float: left;
-  margin: 0;
-  border-radius: 5px;
-  padding: 5px;
+  font-size: 20px;
+  margin-top: 10px;
 }
