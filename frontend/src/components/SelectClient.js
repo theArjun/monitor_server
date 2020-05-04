@@ -5,7 +5,7 @@ import Slider from "./Slider";
 const SelectClients = React.memo((props) => {
   const [selectedClients, setSelectedClients] = useState([]);
   const [userTypesGlobalCommand, setUserTypesGlobalCommand] = useState("");
-  const [globalCommand, setGlobalCommand] = useState("date");
+  const [globalCommand, setGlobalCommand] = useState();
   const [showGlobalCommandBox, setShowGlobalCommandBox] = useState(false);
 
   const client_data = [];

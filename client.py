@@ -37,7 +37,7 @@ payload = {
 
 def execute_command(command):
 
-    execution_timestamp = f'{datetime.datetime.now()}'
+    execution_timestamp = str(datetime.datetime.now())[:-7]
     proc = subprocess.Popen(command,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
@@ -66,7 +66,7 @@ def execute_command(command):
     }
 
     print(client_response)
-    
+
     return json.dumps(client_response)
 
 # Defining Event Handlers
