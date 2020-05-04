@@ -47,13 +47,12 @@ const slider = (props) => {
     <Slider {...settings}>
       {props.selected_clients.map((item) => {
         return (
-          <div>
-            <SendCommand
-              client_ID={item.client_ID}
-              client_Session_ID={item.client_Session_ID}
-              socket={props.socket}
-            />
-          </div>
+          <SendCommand
+            key={item.client_Session_ID}
+            client_ID={item.client_ID}
+            client_Session_ID={item.client_Session_ID}
+            socket={props.socket}
+          />
         );
       })}
     </Slider>
