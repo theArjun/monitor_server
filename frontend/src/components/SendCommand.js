@@ -18,12 +18,18 @@ const SendCommand = React.memo((props) => {
   ] = useState(false);
   const [latestCommandSupplied, setLatestCommandSupplied] = useState("");
 
+  const [showBatchEfficiency, setShowBatchEfficiency] = useState(false);
+  const [batchEfficiency, setBatchEfficiency] = useState(-1);
+
   useEffect(() => {
     setQuery(props.globalCommand);
   }, [props.globalCommand]);
 
+  let efficiency;
   props.socket.on("output_from_client_to_web", (commandOutput) => {
-    const output = JSON.parse(commandOutput);
+    const output = JSON.parse(commandOutput).response;
+    setBatchEfficiency(JSON.parse(commandOutput).efficiency);
+    setShowBatchEfficiency(true);
 
     // Show output to respective clients.
     if (output.session_ID === props.client_Session_ID) {
@@ -60,6 +66,11 @@ const SendCommand = React.memo((props) => {
   return (
     <div className="tile is-parent">
       <article className="tile is-child notification is-bordered has-text-centered">
+        {showBatchEfficiency ? (
+          <span style={{ float: "right" }}>
+            Batch Command Execution Efficiency : {batchEfficiency}
+          </span>
+        ) : null}
         <div className="title">{props.client_ID}</div>
         <div style={{ display: "block" }}>
           {latestCommandSupplied.length !== 0 ? (
